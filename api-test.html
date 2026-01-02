@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing - Aplikasi Kearsipan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+        .warning {
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Testing - Aplikasi Kearsipan</h1>
+    
+    <div class="container">
+        <h2>⚙️ Konfigurasi API</h2>
+        <div class="input-group">
+            <label for="apiUrl">API Base URL:</label>
+            <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/.../exec" 
+                   value="https://script.google.com/macros/s/AKfycbzJzeqt4HGwXLCj0vLk8w2X02mz2FQdcBZQGJ0b6hLrYFa5TtKA3q4tlJtd5i6sm_U3/exec">
+        </div>
+        <button onclick="testConnection()">🔗 Test Connection</button>
+        <div id="connectionResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>🔐 Test Login</h2>
+        <div class="input-group">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" value="admin@example.com">
+        </div>
+        <div class="input-group">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" value="admin123">
+        </div>
+        <button onclick="testLogin()">🔑 Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>👥 Test Get Users</h2>
+        <button onclick="testGetUsers()">📋 Get All Users</button>
+        <div id="getUsersResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>➕ Test Create User</h2>
+        <div class="input-group">
+            <label for="createName">Nama:</label>
+            <input type="text" id="createName" value="Test User">
+        </div>
+        <div class="input-group">
+            <label for="createJabatan">Jabatan:</label>
+            <input type="text" id="createJabatan" value="Staff Test">
+        </div>
+        <div class="input-group">
+            <label for="createNip">NIP:</label>
+            <input type="text" id="createNip" value="999888777">
+        </div>
+        <div class="input-group">
+            <label for="createEmail">Email:</label>
+            <input type="email" id="createEmail" value="test@example.com">
+        </div>
+        <div class="input-group">
+            <label for="createPassword">Password:</label>
+            <input type="password" id="createPassword" value="test123">
+        </div>
+        <div class="input-group">
+            <label for="createRole">Role:</label>
+            <select id="createRole">
+                <option value="User">User</option>
+                <option value="Pimpinan">Pimpinan</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="createPangkat">Pangkat/Golongan:</label>
+            <input type="text" id="createPangkat" value="III/a">
+        </div>
+        <button onclick="testCreateUser()">➕ Create User</button>
+        <div id="createUserResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>📝 Test Update User</h2>
+        <div class="input-group">
+            <label for="updateId">User ID:</label>
+            <input type="number" id="updateId" value="1">
+        </div>
+        <div class="input-group">
+            <label for="updateName">Nama Baru:</label>
+            <input type="text" id="updateName" value="Administrator Updated">
+        </div>
+        <button onclick="testUpdateUser()">✏️ Update User</button>
+        <div id="updateUserResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>🔢 Test Number Generation</h2>
+        <button onclick="testNumberGeneration()">🔢 Test Smart Number Generation</button>
+        <div id="numberGenerationResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>🔄 Test Renumber After Delete</h2>
+        <div class="input-group">
+            <label for="renumberId">User ID to Delete:</label>
+            <input type="number" id="renumberId" value="2">
+        </div>
+        <button onclick="testRenumber()">🔄 Test Delete & Renumber</button>
+        <div id="renumberResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>🏢 Test Lembaga</h2>
+        <button onclick="testGetLembaga()">📋 Get Lembaga Data</button>
+        <div id="getLembagaResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>📝 Test Update Lembaga</h2>
+        <div class="input-group">
+            <label for="lembagaNama">Nama Lembaga:</label>
+            <input type="text" id="lembagaNama" value="Test Lembaga Updated">
+        </div>
+        <div class="input-group">
+            <label for="lembagaAlamat">Alamat:</label>
+            <input type="text" id="lembagaAlamat" value="Jl. Test No. 123">
+        </div>
+        <div class="input-group">
+            <label for="lembagaTelepon">Telepon:</label>
+            <input type="text" id="lembagaTelepon" value="(021) 999888999">
+        </div>
+        <div class="input-group">
+            <label for="lembagaEmail">Email:</label>
+            <input type="email" id="lembagaEmail" value="test@lembaga.go.id">
+        </div>
+        <div class="input-group">
+            <label for="lembagaWebsite">Website:</label>
+            <input type="text" id="lembagaWebsite" value="www.testlembaga.go.id">
+        </div>
+        <button onclick="testUpdateLembaga()">📝 Update Lembaga</button>
+        <div id="updateLembagaResult" class="result"></div>
+    </div>
+
+    <script>
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value;
+        }
+
+        function showResult(elementId, data, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        async function testConnection() {
+            try {
+                const response = await fetch(getApiUrl());
+                const result = await response.json();
+                showResult('connectionResult', result, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('connectionResult', 'Connection Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                const response = await fetch(`${getApiUrl()}?action=auth/login&method=POST&data=${encodeURIComponent(JSON.stringify({email, password}))}`);
+                const result = await response.json();
+                showResult('loginResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('loginResult', 'Login Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testGetUsers() {
+            try {
+                const response = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const result = await response.json();
+                showResult('getUsersResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('getUsersResult', 'Get Users Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testCreateUser() {
+            try {
+                const userData = {
+                    nama: document.getElementById('createName').value,
+                    jabatan: document.getElementById('createJabatan').value,
+                    nip: document.getElementById('createNip').value,
+                    email: document.getElementById('createEmail').value,
+                    password: document.getElementById('createPassword').value,
+                    role: document.getElementById('createRole').value,
+                    pangkatGolongan: document.getElementById('createPangkat').value,
+                    status: 'Aktif'
+                };
+                
+                const response = await fetch(`${getApiUrl()}?action=users&method=POST&data=${encodeURIComponent(JSON.stringify(userData))}`);
+                const result = await response.json();
+                showResult('createUserResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('createUserResult', 'Create User Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testUpdateUser() {
+            try {
+                const userId = document.getElementById('updateId').value;
+                const userData = {
+                    nama: document.getElementById('updateName').value
+                };
+                
+                const response = await fetch(`${getApiUrl()}?action=users&method=PUT&id=${userId}&data=${encodeURIComponent(JSON.stringify(userData))}`);
+                const result = await response.json();
+                showResult('updateUserResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('updateUserResult', 'Update User Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testDeleteUser() {
+            try {
+                const userId = document.getElementById('deleteId').value;
+                
+                const response = await fetch(`${getApiUrl()}?action=users&method=DELETE&id=${userId}`);
+                const result = await response.json();
+                showResult('deleteUserResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('deleteUserResult', 'Delete User Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testNumberGeneration() {
+            try {
+                // First get current users
+                const usersResponse = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const usersResult = await usersResponse.json();
+                
+                if (!usersResult.success) {
+                    showResult('numberGenerationResult', 'Failed to get current users', 'error');
+                    return;
+                }
+                
+                const currentUsers = usersResult.users;
+                const currentNumbers = currentUsers.map(u => parseInt(u.no)).sort((a, b) => a - b);
+                
+                // Create a test user
+                const testUser = {
+                    nama: 'Test Number ' + Date.now(),
+                    jabatan: 'Test Jabatan',
+                    nip: '999' + Date.now(),
+                    email: 'test' + Date.now() + '@example.com',
+                    password: 'test123',
+                    role: 'User',
+                    pangkatGolongan: 'III/a',
+                    status: 'Aktif'
+                };
+                
+                const createResponse = await fetch(`${getApiUrl()}?action=users&method=POST&data=${encodeURIComponent(JSON.stringify(testUser))}`);
+                const createResult = await createResponse.json();
+                
+                // Get users again to see the new number
+                const newUsersResponse = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const newUsersResult = await newUsersResponse.json();
+                
+                const analysis = {
+                    before: {
+                        users: currentUsers.length,
+                        numbers: currentNumbers,
+                        highestNumber: Math.max(...currentNumbers)
+                    },
+                    after: {
+                        users: newUsersResult.users.length,
+                        newUser: createResult.success ? createResult.user : null
+                    },
+                    test: {
+                        created: createResult.success,
+                        message: createResult.message
+                    }
+                };
+                
+                showResult('numberGenerationResult', analysis, createResult.success ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('numberGenerationResult', 'Number Generation Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testRenumber() {
+            try {
+                const userId = document.getElementById('renumberId').value;
+                
+                // Get users before delete
+                const beforeResponse = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const beforeResult = await beforeResponse.json();
+                
+                if (!beforeResult.success) {
+                    showResult('renumberResult', 'Failed to get users before delete', 'error');
+                    return;
+                }
+                
+                const beforeNumbers = beforeResult.users.map(u => parseInt(u.no)).sort((a, b) => a - b);
+                
+                // Delete user
+                const deleteResponse = await fetch(`${getApiUrl()}?action=users&method=DELETE&id=${userId}`);
+                const deleteResult = await deleteResponse.json();
+                
+                if (!deleteResult.success) {
+                    showResult('renumberResult', 'Delete failed: ' + deleteResult.message, 'error');
+                    return;
+                }
+                
+                // Get users after delete
+                const afterResponse = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const afterResult = await afterResponse.json();
+                
+                const afterNumbers = afterResult.users.map(u => parseInt(u.no)).sort((a, b) => a - b);
+                
+                const analysis = {
+                    before: {
+                        users: beforeResult.users.length,
+                        numbers: beforeNumbers,
+                        deletedUser: userId
+                    },
+                    after: {
+                        users: afterResult.users.length,
+                        numbers: afterNumbers
+                    },
+                    renumbering: {
+                        success: deleteResult.success,
+                        message: deleteResult.message,
+                        numbersRenumbered: JSON.stringify(beforeNumbers) !== JSON.stringify(afterNumbers)
+                    }
+                };
+                
+                showResult('renumberResult', analysis, 'success');
+                
+            } catch (error) {
+                showResult('renumberResult', 'Renumber Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testGetLembaga() {
+            try {
+                const response = await fetch(`${getApiUrl()}?action=lembaga&method=GET`);
+                const result = await response.json();
+                showResult('getLembagaResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('getLembagaResult', 'Get Lembaga Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testUpdateLembaga() {
+            try {
+                const lembagaData = {
+                    namaLembaga: document.getElementById('lembagaNama').value,
+                    alamat: document.getElementById('lembagaAlamat').value,
+                    telepon: document.getElementById('lembagaTelepon').value,
+                    email: document.getElementById('lembagaEmail').value,
+                    website: document.getElementById('lembagaWebsite').value
+                };
+                
+                const response = await fetch(`${getApiUrl()}?action=lembaga&method=PUT&id=1&data=${encodeURIComponent(JSON.stringify(lembagaData))}`);
+                const result = await response.json();
+                showResult('updateLembagaResult', result, result.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('updateLembagaResult', 'Update Lembaga Error: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-test connection on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('Auto-testing API connection...');
+                testConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Login - Aplikasi Kearsipan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Login - Aplikasi Kearsipan</h1>
+    
+    <div class="container">
+        <h2>⚙️ Konfigurasi API</h2>
+        <div class="input-group">
+            <label for="apiUrl">API Base URL:</label>
+            <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/.../exec" 
+                   value="https://script.google.com/macros/s/AKfycbxg2-QdW2SPAAvfZthL4VkXsUSMjyIf8Mt8ZqhFUtMUzXngEkj73209h_C3RLvtLdU/exec">
+        </div>
+        <button onclick="testConnection()">🔗 Test Connection</button>
+        <div id="connectionResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>🔐 Test Login (Step by Step)</h2>
+        <div class="input-group">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" value="admin@example.com">
+        </div>
+        <div class="input-group">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" value="admin123">
+        </div>
+        
+        <button onclick="testLoginStep1()">🔑 Step 1: Test Login</button>
+        <button onclick="testLoginStep2()">🔍 Step 2: Debug URL</button>
+        <button onclick="testLoginStep3()">🧪 Step 3: Manual Test</button>
+        
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <script>
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value;
+        }
+
+        function showResult(elementId, data, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+
+        async function testConnection() {
+            try {
+                const response = await fetch(`${getApiUrl()}?action=users&method=GET`);
+                const result = await response.json();
+                showResult('connectionResult', result, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('connectionResult', 'Connection Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testLoginStep1() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                const loginData = { email, password };
+                console.log('Login data:', loginData);
+                
+                const response = await fetch(`${getApiUrl()}?action=auth/login&method=POST&data=${encodeURIComponent(JSON.stringify(loginData))}`);
+                const result = await response.json();
+                
+                showResult('loginResult', {
+                    step: 'Step 1 - Using encodeURIComponent',
+                    status: response.status,
+                    success: result.success,
+                    data: result
+                }, result.success ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('loginResult', 'Step 1 Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testLoginStep2() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                const loginData = { email, password };
+                
+                // Build URL manually like in index.html
+                const params = new URLSearchParams();
+                params.append('action', 'auth/login');
+                params.append('method', 'POST');
+                params.append('data', encodeURIComponent(JSON.stringify(loginData)));
+                
+                const url = `${getApiUrl()}?${params.toString()}`;
+                
+                console.log('Generated URL:', url);
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                showResult('loginResult', {
+                    step: 'Step 2 - Using URLSearchParams',
+                    url: url,
+                    status: response.status,
+                    success: result.success,
+                    data: result
+                }, result.success ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('loginResult', 'Step 2 Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testLoginStep3() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Test without encodeURIComponent (like the original bug)
+                const loginData = { email, password };
+                
+                const url = `${getApiUrl()}?action=auth/login&method=POST&data=${JSON.stringify(loginData)}`;
+                
+                console.log('URL without encoding:', url);
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                showResult('loginResult', {
+                    step: 'Step 3 - WITHOUT encodeURIComponent (Original Bug)',
+                    url: url,
+                    status: response.status,
+                    success: result.success,
+                    data: result
+                }, result.success ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('loginResult', 'Step 3 Error: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-test connection on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
